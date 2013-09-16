@@ -1,0 +1,16 @@
+ls:listar:no:--all:-todo:--directory:-directorio:-c:-modificacion
+date:fecha:no::::::
+free:libre:no::::::
+rm:borrar:si::::::
+cp:copiar:si::::::
+mv:mover:si::::::
+apt-get install:instalar:si::::::
+apt-cache search:buscar:si::::::
+useradd:agregarusuario:si::::::
+userdel:eliminarusuario:si::::::
+links:navegar:no::::::
+clear:limpiar:no::::::
+nano:editor:si::::::
+cd:ve:si:::::: 
+ps:procesos:no::::::
+exit:salir:no::::::
