@@ -1,48 +1,52 @@
+#!/bin/bash
+PASSWORDS=/home/abraham/GitHub/Matus/passwords
+COMMANDS=/home/abraham/GitHub/Matus/commands
+
+
 function loguear(){
-    log=0
-    while [ $log = 0 -o $log = 1 ]; do	
-        echo -n "Usuario: "; read usuario
-        echo -n "Contraseña para $usuario: "; stty -echo;
-        read contrasena; stty echo
-        echo -e	
-	    while IFS=: read user pass full home; do
-		    if [ $usuario = $user ]; then
-			    if [ $contrasena = $pass ]; then
-				    if [ $(date +"%H") -lt 12 ]; then
-					    echo -e "Buen día $usuario\n"
-				    elif [ $(date +"%H") -lt 19 ]; then
-					    echo -e "Buena tarde $usuario\n"
-				    else
-					    echo -e "Buena noche $usuario\n"
-				    fi
-				    log=2
-			    else
-				    echo -e "Lo siento, contraseña no valida\n"
-				    log=1
-			    fi
-		    fi
-	    done < /etc/passwords
-	    if [ $log = 0 ]; then
-		    echo -e "Lo siento, usuario no valido\n"
-	    fi
-    done	
+	log=0
+	while [ $log = 0 -o $log = 1 ]; do
+		echo -n "Usuario: "; read usuario
+		echo -n "Contraseña para $usuario: "; stty -echo;
+		read contrasena; stty echo
+		echo -e
+		while IFS=: read user pass full home; do
+			if [ $usuario = $user ]; then
+				if [ $contrasena = $pass ]; then
+					if [ $(date +"%H") -lt 12 ]; then
+						echo -e "Buen día $usuario\n"
+					elif [ $(date +"%H") -lt 19 ]; then
+						echo -e "Buena tarde $usuario\n"
+					else
+						echo -e "Buena noche $usuario\n"
+					fi
+					log=2
+				else
+					echo -e "Lo siento, contraseña no valida\n"
+					log=1
+				fi
+			fi
+		done < $PASSWORDS
+		if [ $log = 0 ]; then
+			echo -e "Lo siento, usuario no valido\n"
+		fi
+	done
 }
 
 function crearUsuarios(){
-    echo -n "Nombre de usuario: "; read newUser
-    echo -e
-    echo -n "Contraseña: "; read newPass
-    echo -e
-    echo $newUser
-    echo $newPass
-    echo "$newUser:$newPass:/home/$newUser" >> /etc/passwords
-    ejecutar="$(grep ${instruccion[0]} /etc/commands | cut -d":" -f1) ${parametros[@]}"
-    if ! $ejecutar 2>/dev/null; then
-	    echo "No se puede ejecutar la orden, revisa los parametros y/o modificadores"
-    fi
+	echo -n "Nombre de usuario: "; read newUser
+	echo -e
+	echo -n "Contraseña: "; read newPass
+	echo -e
+	echo $newUser
+	echo $newPass
+	echo "$newUser:$newPass:/home/$newUser" >> $PASSWORDS
+	ejecutar="$(grep ${instruccion[0]} $COMMANDS | cut -d":" -f1) ${parametros[@]}"
+	if ! $ejecutar 2>/dev/null; then
+		echo "No se puede ejecutar la orden, revisa los parametros y/o modificadores"
+	fi
 }
 
-#!/bin/bash
 #Logueo
 #log=0 indica usuario incorrecto, log=1 indica usuario valido y
 #contraseña incorrecta, log=2 indica logueado
@@ -83,13 +87,13 @@ do
 				break
 			fi
 			found=1
-			ejecutar="$(grep ${instruccion[0]} /etc/commands | cut -d":" -f1) ${parametros[@]}"
+			ejecutar="$(grep ${instruccion[0]} $COMMANDS | cut -d":" -f1) ${parametros[@]}"
 			if ! $ejecutar 2>/dev/null; then
 				echo "No se puede ejecutar la orden, revisa los parametros y/o modificadores"
 			fi
 			break;
 		fi
-	done < /etc/commands
+	done < $COMMANDS
 	if [ $found = 0 ]; then
 		echo -e "${instruccion[0]}: comando no encontrado u.u'"
 	fi
